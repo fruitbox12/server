@@ -1,3 +1,4 @@
+const b64 = require("b64");
 function encode(data) {
     let uEnv = b64.base64urlEncode(data)
     return String(uEnv)

@@ -43,10 +43,10 @@ const executeCodeRequest = async (req, res, next) => {
   console.log(req['headers'])
   console.log(code)
   console.log(event)
-  let response = await createChannel(req['headers'].event, req['headers'].code)
+  let response = await createChannel(req['headers'].event, req['headers'].code, res)
   console.log(response)
   return res.json({
-    message: "this works",
+    message: "this works"
   })
 }
 

@@ -1,7 +1,9 @@
 const fs = require('fs');
-
+const tools = require ("./tools");
 const Hyperbeam = require('hyperbeam');
 const { connected, stdout } = require('process');
+const path = require('path')
+
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(function () {
@@ -12,7 +14,9 @@ function sleep(ms) {
 var lol;
 var string;
 
-async function createChannel(channelID, code) {
+async function createChannel(channelID, code, res) {
+  var spawn = require("child_process").spawn;
+
   console.log('connecting to channID ' + channelID)
   console.log(`using code ${code}`)
 
@@ -47,21 +51,71 @@ async function createChannel(channelID, code) {
   // })
     // const name = prompt('What is your name?')
     lol = beam.on('data', data => {
-      data = data.toString()
+      data = tools.decode(data.toString())
       process.stdout.write("\n"+data +"\n")
-      fs.writeFile("result.txt", data, err => {
+      fs.writeFile("./libraries/result.py",  data, err => {
         if (err) throw err;
+
+
+        async function searchForRelevantDoc () {  n
+          var spawn = require('child_process').spawn,
+              py    = spawn('python', [path.join(__dirname, 'result.py')]),
+              output = '';
+      
+          py.stdin.setEncoding = 'utf-8';
+      
+          py.stdout.on('data', (data) => {
+              output += data.toString();
+              console.log('output was generated: ' + output);
+              beam.write(output)
+            });
+          // Handle error output
+          py.stderr.on('data', (data) => {
+          // As said before, convert the Uint8Array to a readable string.
+              console.log('error:' + data);
+          });
+          py.stdout.on('end', async function(code){
+    
+              beam.write(output)
+          });
+          beam.write(output)
+
+
+          return output;
+          
+      }
+
+
+
         console.log('File successfully written to disk');
+        function runScript(){
+          return  spawn('python', [
+             "-u",
+             path.join(__dirname, 'result.py')
+          ]);
+       }
+
+         try{
+
+          var subprocess = searchForRelevantDoc()
+          sleep(20000);
+
+         }
+         catch{
+          subprocess.stderr.on('data', (data) => {
+            console.log(`error:${data}`);
+         });
+         }
+      } )
+            
          }) 
      })
-    })
 //  },)
-
    
 
   
 
-const fs = require("fs")
+const fs = require("fs");
 var poop =''
 function readStream() {
  nose = toString(resolveAfter2Seconds())

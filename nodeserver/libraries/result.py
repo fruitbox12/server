@@ -1,5 +1,4 @@
 
-
 def fibonacci(max_n):
     n, prev = 1, 1
     while n <= max_n:
@@ -11,4 +10,4 @@ def lambda_handler(event, context):
     total = sum(n for n in fibonacci(event["value"]) if n % 2 == 0)
     return total
 
-    
+    7
