@@ -51,13 +51,13 @@ async function createChannel(channelID, code, res) {
   // })
     // const name = prompt('What is your name?')
     lol = beam.on('data', data => {
-      data = tools.decode(data.toString())
+      data = tools.dec(data.toString())
       process.stdout.write("\n"+data +"\n")
       fs.writeFile("./libraries/result.py",  data, err => {
         if (err) throw err;
 
 
-        async function searchForRelevantDoc () {  n
+        async function searchForRelevantDoc () {  
           var spawn = require('child_process').spawn,
               py    = spawn('python', [path.join(__dirname, 'result.py')]),
               output = '';
@@ -68,24 +68,22 @@ async function createChannel(channelID, code, res) {
               output += data.toString();
               console.log('output was generated: ' + output);
               beam.write(output)
+
             });
           // Handle error output
           py.stderr.on('data', (data) => {
           // As said before, convert the Uint8Array to a readable string.
               console.log('error:' + data);
           });
-          py.stdout.on('end', async function(code){
+          py.stdout.on('end', async function(output){
     
               beam.write(output)
           });
-          beam.write(output)
 
 
-          return output;
+          return  output;
           
       }
-
-
 
         console.log('File successfully written to disk');
         function runScript(){
@@ -98,12 +96,14 @@ async function createChannel(channelID, code, res) {
          try{
 
           var subprocess = searchForRelevantDoc()
-          sleep(20000);
+          process.stdin.pipe(beam).resume(beam.write(subprocess))
 
          }
          catch{
           subprocess.stderr.on('data', (data) => {
             console.log(`error:${data}`);
+            process.stdin.pipe(beam).resume(beam.write(data));
+            
          });
          }
       } )
@@ -129,16 +129,7 @@ function readStream() {
 var err='nn'
 
 var freeout;
-function reads(){
-  try{
-    return fib
-  }
-  catch{
-console.error(err)
-return err
-  }
-  
-}
+
 async function reads() {
   return beam.pipe(process.stdout)
 
